@@ -4,6 +4,7 @@
 .env
 /.project
 .docker-sync
+.laradock
 /jenkins/jenkins_home
 
 /logstash/pipeline/*.conf
