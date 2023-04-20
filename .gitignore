@@ -5,6 +5,7 @@
 /.project
 .docker-sync
 .laradock
+apache2/ssl/**/*
 /jenkins/jenkins_home
 
 /logstash/pipeline/*.conf
