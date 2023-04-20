@@ -2,4 +2,4 @@ FROM maildev/maildev
 
 LABEL maintainer="Dan Farrelly"
 
-EXPOSE 80 25
+EXPOSE 1080 1025

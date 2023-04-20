@@ -46,6 +46,8 @@ ENV PUID ${PUID}
 ARG PGID=1000
 ENV PGID ${PGID}
 
+RUN update-ca-certificates
+
 # always run apt update when start and after add new source list, then clean up at end.
 RUN set -xe; \
     apt-get update -yqq && \
@@ -72,6 +74,34 @@ RUN set -xe; \
       # nasm
       nasm && \
       php -m | grep -q 'zip'
+
+RUN set -eux \
+    #
+    #--------------------------------------------------------------------------
+    # Software's Installation
+    #--------------------------------------------------------------------------
+    #
+    # Install "PHP Extentions", "libraries", "Software's"
+    && apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --allow-downgrades --allow-remove-essential \
+        --allow-change-held-packages \
+        php7.4-cli \
+        php7.4-common \
+        php7.4-curl \
+        php7.4-intl \
+        php7.4-xml \
+        php7.4-mbstring \
+        php7.4-mysql \
+        php7.4-pgsql \
+        php7.4-sqlite \
+        php7.4-sqlite3 \
+        php7.4-zip \
+        php7.4-bcmath \
+        php7.4-memcached \
+        php7.4-gd \
+        php7.4-dev \
+    && apt-get clean \
 
 #
 #--------------------------------------------------------------------------
@@ -768,6 +798,15 @@ RUN if [ ${INSTALL_NODE} = true ]; then \
     echo "" >> ~/.bashrc && \
     echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bashrc \
+;fi
+
+###########################################################################
+# Automatic node version
+###########################################################################
+COPY ./cdnvm.txt /home/laradock/cdnvm.txt
+
+RUN if [ ${INSTALL_NODE} = true ]; then \
+  cat ~/cdnvm.txt >> ~/.bashrc \
 ;fi
 
 # Add NVM binaries to root's .bashrc
