@@ -1,0 +1,41 @@
+<VirtualHost *:80>
+  ServerName default-php74.test
+  ServerAlias *.default-php74.test
+
+  RewriteEngine On
+  RewriteCond %{HTTPS} !on
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</VirtualHost>
+
+<VirtualHost *:443>
+  Protocols h2 http/1.1
+  ServerName default-php74.test
+  ServerAlias *.default-php74.test
+  DocumentRoot /var/www/project-path/default-php74/public
+  Options Indexes FollowSymLinks
+
+  SSLEngine on
+  SSLCertificateFile /etc/apache2/ssl/default-php74.test/ssl_site.crt
+  SSLCertificateKeyFile /etc/apache2/ssl/default-php74.test/ssl_site.key
+
+  <Directory "/var/www/project-path/default-php74/">
+    AllowOverride All
+    <IfVersion < 2.4>
+      Allow from all
+    </IfVersion>
+    <IfVersion >= 2.4>
+      Require all granted
+    </IfVersion>
+  </Directory>
+
+  <FilesMatch \.php$>
+    SetHandler "proxy:fcgi://php-fpm-7.4:9000"
+  </FilesMatch>
+
+  ErrorLog /var/log/apache2/default-php74.test_error.log
+  CustomLog /var/log/apache2/default-php74.test_access.log combined
+
+  SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+  SetEnvIf Content-Type "(.*)" HTTP_CONTENT_TYPE=$1
+  SetEnvIf Accept "(.*)" HTTP_ACCEPT=$1
+</VirtualHost>
