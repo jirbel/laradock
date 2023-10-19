@@ -74,6 +74,16 @@ RUN set -xe; \
 #
 
 ###########################################################################
+# sysvsem:
+###########################################################################
+
+ARG INSTALL_SYSVSEM=true
+RUN if [ ${INSTALL_SYSVSEM} = true ]; then \
+  apt-get -yqq install php-sysvsem; \
+  docker-php-ext-install sysvsem \
+;fi
+
+###########################################################################
 # BZ2:
 ###########################################################################
 
@@ -1312,6 +1322,69 @@ ENV PGID ${PGID}
 
 RUN groupmod -o -g ${PGID} www-data && \
     usermod -o -u ${PUID} -g www-data www-data
+
+###########################################################################
+# Node / NVM:
+###########################################################################
+
+# Check if NVM needs to be installed
+ARG NODE_VERSION=16
+ENV NODE_VERSION ${NODE_VERSION}
+ARG INSTALL_NODE=true
+ARG INSTALL_NPM_GULP=false
+ARG INSTALL_NPM_BOWER=false
+ARG INSTALL_NPM_VUE_CLI=false
+ARG INSTALL_NPM_ANGULAR_CLI=false
+ARG NPM_REGISTRY
+ENV NPM_REGISTRY ${NPM_REGISTRY}
+ARG NPM_FETCH_RETRIES
+ENV NPM_FETCH_RETRIES ${NPM_FETCH_RETRIES}
+ARG NPM_FETCH_RETRY_FACTOR
+ENV NPM_FETCH_RETRY_FACTOR ${NPM_FETCH_RETRY_FACTOR}
+ARG NPM_FETCH_RETRY_MINTIMEOUT
+ENV NPM_FETCH_RETRY_MINTIMEOUT ${NPM_FETCH_RETRY_MINTIMEOUT}
+ARG NPM_FETCH_RETRY_MAXTIMEOUT
+ENV NPM_FETCH_RETRY_MAXTIMEOUT ${NPM_FETCH_RETRY_MAXTIMEOUT}
+ENV NVM_DIR /home/www-data/.nvm
+ARG NVM_NODEJS_ORG_MIRROR
+ENV NVM_NODEJS_ORG_MIRROR ${NVM_NODEJS_ORG_MIRROR}
+
+RUN if [ ${INSTALL_NODE} = true ]; then \
+    # Install nvm (A Node Version Manager)
+    mkdir -p $NVM_DIR && \
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash \
+        && . $NVM_DIR/nvm.sh \
+        && nvm install ${NODE_VERSION} \
+        && nvm use ${NODE_VERSION} \
+        && nvm alias ${NODE_VERSION} \
+;fi
+
+# Wouldn't execute when added to the RUN statement in the above block
+# Source NVM when loading bash since ~/.profile isn't loaded on non-login shell
+RUN if [ ${INSTALL_NODE} = true ]; then \
+    echo "" >> ~/.bashrc && \
+    echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc && \
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bashrc \
+;fi
+
+# Add NVM binaries to root's .bashrc
+USER root
+
+RUN if [ ${INSTALL_NODE} = true ]; then \
+    echo "" >> ~/.bashrc && \
+    echo 'export NVM_DIR="/home/www-data/.nvm"' >> ~/.bashrc && \
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bashrc \
+;fi
+
+# Make it so the node modules can be executed with 'docker-compose exec'
+# We'll create symbolic links into '/usr/local/bin'.
+RUN if [ ${INSTALL_NODE} = true ]; then \
+    find $NVM_DIR -type f -name node -exec ln -s {} /usr/local/bin/node \; && \
+    NODE_MODS_DIR="$NVM_DIR/versions/node/$(node -v)/lib/node_modules" \
+;fi
+
+
+USER root
 
 # Adding the faketime library to the preload file needs to be done last
 # otherwise it will preload it for all commands that follow in this file

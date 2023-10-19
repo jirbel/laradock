@@ -185,7 +185,6 @@ services:
         - ./php-worker/supervisord.d:/etc/supervisord.d
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
-        # - "projector.test:172.27.0.14"
       ports:
         - "${WORKSPACE_SSH_PORT}:22"
         - "${WORKSPACE_BROWSERSYNC_HOST_PORT}:3000"
@@ -616,18 +615,26 @@ services:
       networks:
         frontend:
           aliases:
+            - portal-builder.test
             - projector.test
             - rapobrno.test
+            - siluettebrno.test
             - arkasg.test
             - inzertexpres.test
             - api.inzertexpres.test
+            - k1steakhouse.test
+            - tdz-turn.test
         backend:
           aliases:
+            - portal-builder.test
             - projector.test
             - rapobrno.test
+            - siluettebrno.test
             - arkasg.test
             - inzertexpres.test
             - api.inzertexpres.test
+            - k1steakhouse.test
+            - tdz-turn.test
 
 ### HHVM #################################################
     hhvm:

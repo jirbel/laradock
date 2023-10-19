@@ -1280,13 +1280,15 @@ RUN if [ ${INSTALL_IMAGEMAGICK} = true ]; then \
       ./configure && \
       make && \
       make install && \
-      rm -r /tmp/imagick; \
+      rm -r /tmp/imagick && \
+      apt-get install php7.4-imagick; \
     else \
       pecl install imagick; \
     fi && \
     echo "extension=imagick.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/imagick.ini && \
     ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/imagick.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-imagick.ini && \
-    php -m | grep -q 'imagick' \
+    php -m | grep -q 'imagick' && \
+    /usr/bin/php7.4 -m | grep -q 'imagick' \
 ;fi
 
 ###########################################################################
