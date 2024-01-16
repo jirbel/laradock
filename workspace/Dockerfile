@@ -101,6 +101,36 @@ RUN set -eux \
         php7.4-memcached \
         php7.4-gd \
         php7.4-dev \
+        php7.2-cli \
+        php7.2-common \
+        php7.2-curl \
+        php7.2-intl \
+        php7.2-xml \
+        php7.2-mbstring \
+        php7.2-mysql \
+        php7.2-pgsql \
+        php7.2-sqlite \
+        php7.2-sqlite3 \
+        php7.2-zip \
+        php7.2-bcmath \
+        php7.2-memcached \
+        php7.2-gd \
+        php7.2-dev \
+        php5.6-cli \
+        php5.6-common \
+        php5.6-curl \
+        php5.6-intl \
+        php5.6-xml \
+        php5.6-mbstring \
+        php5.6-mysql \
+        php5.6-pgsql \
+        php5.6-sqlite \
+        php5.6-sqlite3 \
+        php5.6-zip \
+        php5.6-bcmath \
+        php5.6-memcached \
+        php5.6-gd \
+        php5.6-dev \
     && apt-get clean \
 
 #
@@ -1281,7 +1311,7 @@ RUN if [ ${INSTALL_IMAGEMAGICK} = true ]; then \
       make && \
       make install && \
       rm -r /tmp/imagick && \
-      apt-get install php7.4-imagick; \
+      apt-get install php7.4-imagick php7.2-imagick php5.6-imagick; \
     else \
       pecl install imagick; \
     fi && \
