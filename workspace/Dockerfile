@@ -86,6 +86,21 @@ RUN set -eux \
     && apt-get upgrade -y \
     && apt-get install -y --allow-downgrades --allow-remove-essential \
         --allow-change-held-packages \
+        php8.1-cli \
+        php8.1-common \
+        php8.1-curl \
+        php8.1-intl \
+        php8.1-xml \
+        php8.1-mbstring \
+        php8.1-mysql \
+        php8.1-pgsql \
+        php8.1-sqlite \
+        php8.1-sqlite3 \
+        php8.1-zip \
+        php8.1-bcmath \
+        php8.1-memcached \
+        php8.1-gd \
+        php8.1-dev \
         php7.4-cli \
         php7.4-common \
         php7.4-curl \
@@ -1872,3 +1887,5 @@ RUN apt-get clean && \
 
 # Set default work directory
 WORKDIR /var/www
+
+EXPOSE 6001
